@@ -1,6 +1,8 @@
-#Author: Farnaz Fouladi
-#Date: 08-17-2020
-#Description: Machine Learning
+#Reference:Wirbel J, Pyl PT, Kartal E, et al. Meta-analysis of fecal metagenomes
+#reveals global microbial signatures that are specific for colorectal cancer. 
+#Nat Med 2019;25:679-689.
+
+#Description: Machine Learning to Find Microbial Signature Across Cohorts
 
 rm(list=ls())
 
