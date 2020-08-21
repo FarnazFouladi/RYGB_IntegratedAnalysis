@@ -12,7 +12,7 @@ library(ggrepel)
 
 output<-"./output/"
 taxa<-"Genus"
-source("./Rcode/functions.R")
+source("./Rcode/RYGB_IntegratedAnalysis/functions.R")
 
 
 #BS 1M 6M
@@ -21,7 +21,7 @@ source("./Rcode/functions.R")
 #Afshar 6M
 
 studies<-c("BS-p1M","BS-p6M","Assal-p3M","Assal-p1Y","Assal-p2Y","Ilhan-p6M","Ilhan-p1Y","Afshar-p6M")
-studyNames<-c("BS-1 month","BS-6 months","Assal-3 months","Assal-1 year","Assal-2 years","Ilhan-6 months","Ilhan-1 year","Afshar-6 months")
+studyNames<-c("BS-1 month","BS-6 months","Assal-3 months","Assal-1 year","Assal-2 years","Ilhan-6 months","Ilhan-1 year","Afshar-Post surgery")
 
 r<-vector()
 pval<-vector()
@@ -119,8 +119,8 @@ grid.arrange(plotList[[28]],ncol=3,nrow=3)
 dev.off()
 
 
-pdf(paste0(output,taxa,"_coefficientsFromScatterPlots.pdf"),width = 7,height = 7)
-theme_set(theme_classic(base_size = 18))
+pdf(paste0(output,taxa,"_coefficientsFromScatterPlots.pdf"),width = 5,height = 5)
+theme_set(theme_classic(base_size = 14))
 print(plot1)
 dev.off()
 

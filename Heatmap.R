@@ -9,13 +9,13 @@ library(ComplexHeatmap)
 
 output<-"./output/"
 taxa<-"Genus"
-source("./Rcode/functions.R")
-studies<-c("BS-1M","BS-6M","Assal-3M","Assal-1Y","Assal-2Y","Ilhan-6M","Ilhan-1Y","Afshar-6M")
+source("./Rcode/RYGB_IntegratedAnalysis/functions.R")
+studies<-c("BS-1M","BS-6M","Assal-3M","Assal-1Y","Assal-2Y","Ilhan-6M","Ilhan-1Y","Afshar-Post")
 
-myT.BS<-read.table(paste0(output,taxa,"_BS_MixedLinearModelResults.txt"),sep="\t",header = TRUE,row.names = 1)
-myT.Assal<-read.table(paste0(output,taxa,"_Assal_MixedLinearModelResults.txt"),sep="\t",header = TRUE,row.names = 1)
-myT.Ilhan<-read.table(paste0(output,taxa,"_Ilhan_MixedLinearModelResults.txt"),sep="\t",header = TRUE,row.names = 1)
-myT.Afshar<-read.table(paste0(output,taxa,"_Afshar_MixedLinearModelResults.txt"),sep="\t",header = TRUE,row.names = 1)
+myT.BS<-read.table(paste0(output,"MixedLinearModels/",taxa,"_BS_MixedLinearModelResults.txt"),sep="\t",header = TRUE,row.names = 1)
+myT.Assal<-read.table(paste0(output,"MixedLinearModels/",taxa,"_Assal_MixedLinearModelResults.txt"),sep="\t",header = TRUE,row.names = 1)
+myT.Ilhan<-read.table(paste0(output,"MixedLinearModels/",taxa,"_Ilhan_MixedLinearModelResults.txt"),sep="\t",header = TRUE,row.names = 1)
+myT.Afshar<-read.table(paste0(output,"MixedLinearModels/",taxa,"_Afshar_MixedLinearModelResults.txt"),sep="\t",header = TRUE,row.names = 1)
 
 myT.BS$logp_1M<-getlog10p(myT.BS$p1M,myT.BS$s1M)
 myT.BS$logp_6M<-getlog10p(myT.BS$p6M,myT.BS$s6M)

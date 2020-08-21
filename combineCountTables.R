@@ -9,7 +9,7 @@ pathToBS<-"./input/RYGB_BS/"
 pathToAssal<-"./input/RYGB_Assal2020/"
 pathToIlhan<-"./input/RYGB_Ilhan2020/"
 pathToAfshar<-"./input/RYGB_Afshar2018/"
-source("./Rcode/functions.R")
+source("./Rcode/RYGB_IntegratedAnalysis/functions.R")
 output<-"./output/"
 
 normalized="log10"

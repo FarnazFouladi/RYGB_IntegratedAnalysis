@@ -10,7 +10,7 @@ library(vegan)
 output<-"./output/"
 taxa<-"Genus"
 colors=c("red","blue","darkgreen","darkorange2","purple","hotpink","black","firebrick")
-source("./Rcode/functions.R")
+source("./Rcode/RYGB_IntegratedAnalysis/functions.R")
 
 
 myT<-read.table(paste0(output,taxa,"_countTable_merged_log10.txt"),sep="\t",header = TRUE)

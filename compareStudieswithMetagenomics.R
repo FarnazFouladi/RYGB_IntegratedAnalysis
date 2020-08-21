@@ -12,7 +12,7 @@ library(ggrepel)
 
 output<-"./output/"
 taxa<-"Genus"
-source("./Rcode/functions.R")
+source("./Rcode/RYGB_IntegratedAnalysis/functions.R")
 
 
 #Metagenomics BS 1M 6M 1Y
@@ -24,7 +24,7 @@ source("./Rcode/functions.R")
 
 
 studies<-c("BS_Kraken2-p1M","BS_Kraken2-p6M","Assal_Kraken2-p3M","Assal_Kraken2-p1Y","Assal_Kraken2-p2Y","Ilhan_Kraken2-p6M","Ilhan_Kraken2-p1Y","Afshar_Kraken2-p6M")
-studyNames<-c("BS-1 month","BS-6 months","Assal-3 months","Assal-1 year","Assal-2 years","Ilhan-6 months","Ilhan-1 year","Afshar-6 months")
+studyNames<-c("BS-1 month","BS-6 months","Assal-3 months","Assal-1 year","Assal-2 years","Ilhan-6 months","Ilhan-1 year","Afshar-Post surgery")
 metagenomicStudies<-c("BS_Kraken2_Metagenomics-p1M","BS_Kraken2_Metagenomics-p6M","BS_Kraken2_Metagenomics-p1Y")
 metagenomicStudyNames<-c("BS-1 month","BS-6 months","BS-1 year")
 
@@ -59,7 +59,7 @@ for (s in 1:length(metagenomicStudies)){
     
     count<-count+1
     df<-compareStudies(path,taxa,strsplit(studies[s1],"-")[[1]][1],strsplit(metagenomicStudies[s],"-")[[1]][1],strsplit(studies[s1],"-")[[1]][2],strsplit(metagenomicStudies[s],"-")[[1]][2])
-    plot<-plotPairwiseStudies(df,paste0("16S ",studyNames[s1]),paste0("Metagenomics ",metagenomicStudyNames[s]),r[count],pval[count])
+    plot<-plotPairwiseStudiesMetagenomics(df,paste0("16S ",studyNames[s1]),paste0("Metagenomics ",metagenomicStudyNames[s]),r[count],pval[count])
     plotList[[count]]<-plot
     studyPairs[count]<-paste0(metagenomicStudies[s],"_",studies[s1])
     if(strsplit(metagenomicStudies[s],"_")[[1]][1] == strsplit(studies[s1],"_")[[1]][1])
