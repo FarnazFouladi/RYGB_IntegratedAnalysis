@@ -254,7 +254,7 @@ for (study in datasets){
 }
 
 pdf(paste0(output,"OportunisticPathogens.pdf"),width = 15,height = 7)
-theme_set(theme_classic(base_size = 9))
+theme_set(theme_classic(base_size = 10))
 grid.arrange(myList[[5]],myList[[1]],myList[[2]],myList[[3]],myList[[4]],ncol=3,nrow=2)
 dev.off()
 

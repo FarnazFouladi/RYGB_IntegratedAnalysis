@@ -161,8 +161,6 @@ ggsave(g3, filename = paste0(output,ml.method,'/loso_performance_',
                              ml.method,'.pdf'),
        width = 5.5, height = 3)
 
-cat('Successfully plotted performance heatmap and LOSO barplots in',
-    proc.time()[1]-start.time, 'second...\n')
 
 # #######################
 # End of script

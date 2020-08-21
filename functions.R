@@ -98,17 +98,43 @@ plotPairwiseStudies<-function(df,xlab,ylab,coeficient,p){
   
   df1<-df[(df[,"pval1"]<log10(0.05) & df[,"pval2"]<log10(0.05)) | (df[,"pval1"]>-log10(0.05) & df[,"pval2"]>-log10(0.05)),]
   
+  if (p==0){
+    p1 = "< 2.2e-16"
+  } else {
+    p1 = paste("=",format(p,digits = 3))
+  }
+  
   theme_set(theme_classic())
   
   plot<-ggplot(data=df,aes(x=pval1,y=pval2))+geom_point(size=0.8)+
     geom_hline(yintercept = 0,linetype="dashed", color = "red")+
     geom_vline(xintercept = 0,linetype="dashed", color = "red")+
     labs(x=xlab,y=ylab,
-         title = paste0("Spearman coefficient = ",format(coeficient,digits =3),"\nAdjusted p = ",format(p,digits = 3)))+
+         title = paste0("Spearman coefficient = ",format(coeficient,digits =3),"\nAdjusted p ",p1))+
     geom_text_repel(data=df1,aes(x=pval1,y=pval2,label=bugName),segment.colour="red",size=2.5,min.segment.length = 0,
                     segment.color="grey",segment.size=0.2)
   
 }
+
+#This function generate p-value versus p-value plot for the comparisons for metagenomic data
+plotPairwiseStudiesMetagenomics<-function(df,xlab,ylab,coeficient,p){
+  
+  if (p==0){
+    p1 = "< 2.2e-16"
+  } else {
+    p1 = paste("=",format(p,digits = 3))
+  }
+  
+  theme_set(theme_classic())
+  
+  plot<-ggplot(data=df,aes(x=pval1,y=pval2))+geom_point(size=0.8)+
+    geom_hline(yintercept = 0,linetype="dashed", color = "red")+
+    geom_vline(xintercept = 0,linetype="dashed", color = "red")+
+    labs(x=xlab,y=ylab,
+         title = paste0("Spearman coefficient = ",format(coeficient,digits =3),"\nAdjusted p ",p1))
+}
+
+
 
 #This function perfomes spearman test between studies
 correlationBetweenStudies<-function(df){
