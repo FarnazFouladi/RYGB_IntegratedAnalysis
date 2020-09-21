@@ -52,7 +52,7 @@ Figures 5 and 6 )
 compareStudies_Metagenomics.R
 compareStudies_pathways.R
 
-9. Machine leaning (Figure 4 and Supplemental Figure 7)
+10. Machine leaning (Figure 4 and Supplemental Figure 7)
 
 train_model.R (LASSO)
 train_model_cluster.R (Random Forest takes long and I had to run it on the cluster
@@ -60,7 +60,7 @@ They are similar scripts!)
 
 Figure_performance.R
 
-10. Opportunistic pathogenes (Figure 5)
+11. Opportunistic pathogenes (Figure 5)
 
 OpportunisticPathogens.R
 
