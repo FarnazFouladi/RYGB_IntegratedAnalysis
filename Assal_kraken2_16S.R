@@ -1,6 +1,8 @@
 #Author: Farnaz Fouladi
 #Date: 08-17-2020
-#Description: Compare the gut microbiome at each time point versus baseline.
+#Description: Assal dataset:Compare the gut microbiome at each time point versus
+#             baseline using mixed linear models. Count tables is classified by 
+#             Kraken2.
 
 rm(list=ls())
 
@@ -29,8 +31,18 @@ for (t in taxa){
   
   if (t=="Species"){
     
+    #Removing low abundant Ehrlichia ruminantium(469) and 
+    #Maricaulis maris (780) as they give convergence error
+    
+    myT<-myT[,-c(469,780)]
     myT2<-cbind(myT,meta)
     write.table(myT2,paste0(input,"Assal_speciesMetadata.txt"),sep="\t",quote = FALSE)
+  }
+  if(t=="Genus"){
+    
+    #Removing low abundant "Ehrlichia" (289), "Maricaulis" (465) 
+    # as they give convergence error
+    myT<-myT[,-c(289,465)]
   }
   
   pval<-vector()
@@ -47,44 +59,25 @@ for (t in taxa){
     
     bug<-myT[,i]
     
-    if (mean(bug>0)>0.1){
+    if (mean(bug>0)>0.1){ 
       
       df<-data.frame(bug,meta)
       
-      fit<-tryCatch({
-        lme(bug~time,method="REML",random=~1|ID,data=df)
-      },
-      error=function(e){cat("ERROR :",conditionMessage(e), "\n")
-        return(NA)})
+      fit<-anova(lme(bug~time,method="REML",random=~1|ID,data=df))
+      sm<-summary(lme(bug~time,method="REML",random=~1|ID,data=df))
       
-      if (is.na(fit)){
-        print(colnames(myT)[i])
-        pval[index]<-NA
-        p3M[index]<-NA
-        p1Y[index]<-NA
-        p2Y[index]<-NA
-        
-        s3M[index]<-NA
-        s1Y[index]<-NA
-        s2Y[index]<-NA
-        
-      }else{
-        
-        fit<-anova(lme(bug~time,method="REML",random=~1|ID,data=df))
-        sm<-summary(lme(bug~time,method="REML",random=~1|ID,data=df))
-        
-        pval[index]<-fit$`p-value`[2]
-        p3M[index]<-sm$tTable[2,5]
-        p1Y[index]<-sm$tTable[3,5]
-        p2Y[index]<-sm$tTable[4,5]
-        
-        s3M[index]<-sm$tTable[2,1]
-        s1Y[index]<-sm$tTable[3,1]
-        s2Y[index]<-sm$tTable[4,1]
-      }
+      pval[index]<-fit$`p-value`[2]
+      p3M[index]<-sm$tTable[2,5]
+      p1Y[index]<-sm$tTable[3,5]
+      p2Y[index]<-sm$tTable[4,5]
+      
+      s3M[index]<-sm$tTable[2,1]
+      s1Y[index]<-sm$tTable[3,1]
+      s2Y[index]<-sm$tTable[4,1]
+      
       bugName[index]<-colnames(myT)[i]
       index<-index+1
-    
+      
     }
   }
   

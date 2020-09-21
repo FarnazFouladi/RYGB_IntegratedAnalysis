@@ -1,6 +1,7 @@
 #Author: Farnaz Fouladi
 #Date: 08-17-2020
-#Description: Compare the gut microbiome at each time point versus baseline.
+#Description: Compare the gut microbiome at each time point versus baseline using
+#             mixed linear models and metagenomic data.
 
 rm(list=ls())
 
@@ -15,47 +16,37 @@ taxa<-c("Phylum","Class","Order","Family","Genus","Species")
 for (t in c("Phylum","Class","Order","Family","Genus","Species")){
   
   
-  kraken<-read.table(paste0(input,t,"_revisednames_Jan232020_taxaCount_norm_Log10.txt"),sep="\t",comment.char = "",check.names = FALSE,quote = "")
+  kraken<-read.table(paste0(input,"bariatricSurgery_Jan232020_2_2020Jan23_taxaCount_norm_Log10_",t,".tsv"),
+                     sep="\t",comment.char = "",check.names = FALSE,quote = "",row.names = 1,header = TRUE)
   
-  kraken$SampleType<-sapply(rownames(kraken),function(x){
-    if (x=="BS_BLANK" | x=="BS_DNA_BLANK" | x=="PL1H2O" | x=="PL2H2O" ) return("Blank")
-    else if (x=="MMCC1" | x=="PL1MMC" | x=="PL2MMC" ) return("MMC")
-    else return("Sample")
+  meta<-read.table(paste0(input,"Metadata_BS_RYGB.txt"),
+                   sep="\t",comment.char = "",check.names = FALSE,quote = "",header = TRUE)
+  
+  
+  rownames(kraken)<-sapply(rownames(kraken),function(x){
+    if(substr(x,1,2)=="BS") return(substr(x,1,6))
+    else  return(strsplit(x,"_")[[1]][1])
   })
   
-  kraken$Run<-sapply(rownames(kraken),function(x){
-    if(substr(x,1,2)=="BS" | x=="MMCC1") return("Run1")
-    else return("Run2")
-  })
+  myT1<-kraken[meta$Sample.ID,]
+  myT1_RYGB<-myT1[meta$Type.of.Surgery==1 & !is.na(meta$Type.of.Surgery),]
+  meta1<-meta[meta$Type.of.Surgery==1 & !is.na(meta$Type.of.Surgery),]
   
   
-  kraken$Site<-factor(sapply(as.character(kraken$patientID),function(x){
-    if (x!= "positive.control" & x!= "water.blank" & x!= "DNA.iso.blank"){
-      
-      if (strsplit(x,"-")[[1]][2]=="1") return("1") 
-      else if (strsplit(x,"-")[[1]][2]=="2") return("2")
-      else return(NA)
-    } else {
-      return(NA)
-    }
-    
-  }))
-  
-  kraken$timePoint<-factor(kraken$timePoint)
-  
-  #Removing BIO-2-014 (duplicates)
-  kraken<-kraken[kraken$patientID!="BIO-2-014-0",]
-  #Remove controls 
-  myT1<-kraken[!is.na(kraken$Site),]
-  #Selecting RYGB surgery
-  surgeryType<-read.table(paste0(input,"TypeDateofSurgery-BiobehavioralR016-12-2020_FF.txt"),sep="\t",header = TRUE)
-  myT1$patientID<-sapply(as.character(myT1$patientID),function(x){substr(x,1,9)})
-  myT1<-merge(myT1,surgeryType,by.x = "patientID",by.y = "Patient.ID",all.x = TRUE,all.y = FALSE)
-  myT1_RYGB<-myT1[myT1$Type.of.Surgery==1 & !is.na(myT1$Type.of.Surgery),]
   #Removing samples at 18 months after surgery (n=2)
-  myT1_RYGB<-myT1_RYGB[myT1_RYGB$timePoint!=18,]
+  myT2_RYGB<-myT1_RYGB[meta1$Timepoint!=18,]
+  meta2<-meta1[meta1$Timepoint!=18,]
+  
   #Removing samples that do not have baseline samples
-  myT1_RYGB<-myT1_RYGB[myT1_RYGB$patientID %in% (myT1_RYGB$patientID[myT1_RYGB$timePoint==0]),]
+  myT3_RYGB<-myT2_RYGB[meta2$Participant_ID %in% (meta2$Participant_ID[meta2$Timepoint==0]),]
+  meta3<-meta2[meta2$Participant_ID %in% (meta2$Participant_ID[meta2$Timepoint==0]),]
+  
+  #Removing duplicated ID ("BIO-2-013-1")
+  myT3_RYGB<-myT3_RYGB[!duplicated(meta3$Patient.ID.x),]
+  meta3<-meta3[!duplicated(meta3$Patient.ID.x),]
+  
+  
+  meta3$Timepoint<-factor(meta3$Timepoint)
   
   pval<-vector()
   p1M<-vector()
@@ -66,28 +57,22 @@ for (t in c("Phylum","Class","Order","Family","Genus","Species")){
   s1Y<-vector()
   bugName<-vector()
   index<-1
-  finishAbundanceIndex<-which(colnames(myT1_RYGB)=="timePoint")-1
-  myT2<-myT1_RYGB[,2:finishAbundanceIndex]
-  meta<-myT1_RYGB[,(finishAbundanceIndex+1):ncol(myT1_RYGB)]
-  
-  meta$ID<-myT1_RYGB$patientID
-  meta$time<-meta$timePoint
   
   if(t=="Species"){
-    myT3<-cbind(myT2,meta)
+    myT3<-cbind(myT3_RYGB,meta3)
     write.table(myT3,paste0(input,"BSMetagenomics_speciesMetadata.txt"),sep="\t",quote = FALSE)
   }
   
-  for (i in 1:ncol(myT2)){
+  for (i in 1:ncol(myT3_RYGB)){
     
-    bug<-myT2[,i]
+    bug<-myT3_RYGB[,i]
     
     if (mean(bug>0)>0.1){
       
-      df<-data.frame(bug,meta)
+      df<-data.frame(bug,meta3)
       
-      fit<-anova(lme(bug~time,method="REML",random=~1|ID,data=df))
-      sm<-summary(lme(bug~time,method="REML",random=~1|ID,data=df))
+      fit<-anova(lme(bug~Timepoint,method="REML",random=~1|Participant_ID,data=df))
+      sm<-summary(lme(bug~Timepoint,method="REML",random=~1|Participant_ID,data=df))
       
       pval[index]<-fit$`p-value`[2]
       p1M[index]<-sm$tTable[2,5]
@@ -98,7 +83,7 @@ for (t in c("Phylum","Class","Order","Family","Genus","Species")){
       s6M[index]<-sm$tTable[3,1]
       s1Y[index]<-sm$tTable[4,1]
       
-      bugName[index]<-colnames(myT2)[i]
+      bugName[index]<-colnames(myT3_RYGB)[i]
       index<-index+1
     }
   }

@@ -1,6 +1,6 @@
 #Author: Farnaz Fouladi
 #Date: 08-17-2020
-#Description: Heatmap
+#Description: Heatmap for 16S datasets
 
 rm(list=ls())
 

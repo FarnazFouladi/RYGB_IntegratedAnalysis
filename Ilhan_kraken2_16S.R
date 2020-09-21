@@ -1,6 +1,8 @@
 #Author: Farnaz Fouladi
 #Date: 08-17-2020
-#Description: Compare the gut microbiome at each time point versus baseline.
+#Description: Ilhan dataset:Compare the gut microbiome at each time point versus
+#             baseline using mixed linear models. Count tables is classified by 
+#             Kraken2.
 
 rm(list=ls())
 

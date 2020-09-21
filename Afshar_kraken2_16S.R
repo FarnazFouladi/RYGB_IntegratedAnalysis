@@ -1,6 +1,8 @@
 #Author: Farnaz Fouladi
 #Date: 08-17-2020
-#Description: Compare the gut microbiome at each time point versus baseline.
+#Description: Afshar dataset:Compare the gut microbiome at each time point versus
+#             baseline using mixed linear models. Count tables is classified by 
+#             Kraken2.
 
 rm(list=ls())
 
@@ -22,7 +24,7 @@ for (t in taxa){
   meta$ID<-as.factor(sapply(as.character(meta$title),function(x){strsplit(x,"_")[[1]][1]}) )
   meta$time<-as.factor(sapply(as.character(meta$title),function(x){strsplit(x,"_")[[1]][2]}) )
   
-  
+  #Select longitudinal samples
   meta1<-meta[!is.na(meta$time) & meta$time!="BOCABS",]
   myT1<-myT[!is.na(meta$time) & meta$time!="BOCABS",]
   
@@ -32,7 +34,6 @@ for (t in taxa){
   if(t=="Species"){
     myT2<-cbind(myT1,meta1)
     write.table(myT2,paste0(input,"Afshar_speciesMetadata.txt"),sep="\t",quote = FALSE)
-    
   }
   
   pval<-vector()

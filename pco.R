@@ -27,13 +27,33 @@ dev.off()
 
 #PERMANOVA 
 adonis(myT~factor(meta$time)*factor(meta$Study))
+"Call:
+adonis(formula = myT ~ factor(meta$time) * factor(meta$Study)) 
 
-"                                      Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
-factor(meta$time)                      1    0.8352 0.83523 11.2924 0.04014  0.001 ***
-factor(meta$Study)                     3    6.4087 2.13625 28.8823 0.30798  0.001 ***
-factor(meta$time):factor(meta$Study)   3    0.2518 0.08393  1.1347 0.01210  0.250    
-Residuals                            180   13.3135 0.07396         0.63979           
-Total                                187   20.8092                 1.00000           
----"
+Permutation: free
+Number of permutations: 999
+
+Terms added sequentially (first to last)
+
+                                      Df SumsOfSqs MeanSqs F.Model      R2
+factor(meta$time)                      1    0.7310 0.73104  9.1596 0.03296
+factor(meta$Study)                     3    6.8119 2.27064 28.4503 0.30712
+factor(meta$time):factor(meta$Study)   3    0.2710 0.09035  1.1320 0.01222
+Residuals                            180   14.3660 0.07981         0.64770
+Total                                187   22.1799                 1.00000
+                                     Pr(>F)    
+factor(meta$time)                     0.001 ***
+factor(meta$Study)                    0.001 ***
+factor(meta$time):factor(meta$Study)  0.277    
+Residuals                                      
+Tota"
+
+
+
+
+
+
+
+
 
 

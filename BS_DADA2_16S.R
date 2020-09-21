@@ -1,6 +1,8 @@
 #Author: Farnaz Fouladi
 #Date: 08-17-2020
-#Description: Compare the gut microbiome at each time point versus baseline.
+#Description: BS dataset:Compare the gut microbiome at each time point versus
+#              baseline using mixed linear models. Count tables are classified by 
+#             DADA2.
 
 rm(list=ls())
 
@@ -9,32 +11,30 @@ library(nlme)
 
 input<-"./input/RYGB_BS/"
 output<-"./output/MixedLinearModels/"
-taxa<-c("Phylum","Class","Order","Family","Genus","SV")
+taxa<-c("Phylum","Class","Order","Family","Genus","SV","Seq")
 
 for (t in taxa){
   
   
-  dada2<-read.table(paste0(input,t,"_norm_table.txt"),sep="\t",header = TRUE,row.names = 1)
-  surgeryType<-read.table(paste0(input,"TypeDateofSurgery-BiobehavioralR016-12-2020_FF.txt"),sep="\t",header = TRUE)
-  dada2$Patient.ID<-sapply(as.character(dada2$Patient.ID),function(x){substr(x,1,9)})
-  
-  #Merge count table with type of surgery
-  dada2_merge<-merge(dada2,surgeryType,by.x = "Patient.ID",by.y = "Patient.ID",all.x = TRUE,all.y = FALSE,sort = FALSE)
-  
+  dada2<-read.table(paste0(input,t,"_norm_table.txt"),sep="\t",header = TRUE,row.names = 1,check.names = FALSE)
+   
   #Selecting RYGB surgeries
-  dada2_merge_rygb<-dada2_merge[dada2_merge$Type.of.Surgery==1 & !is.na(dada2_merge$Type.of.Surgery),]
+  dada2_rygb<-dada2[dada2$Type.of.Surgery ==1 & !is.na(dada2$Type.of.Surgery),]
   
   #Removing samples that do not have baselines
-  dada2_merge_rygb<-dada2_merge_rygb[dada2_merge_rygb$Patient.ID %in% (dada2_merge_rygb$Patient.ID[dada2_merge_rygb$Timepoint==0]),]
+  dada2_rygb<-dada2_rygb[dada2_rygb$Participant_ID %in% (dada2_rygb$Participant_ID[dada2_rygb$Timepoint==0]),]
   
-  dada2_merge_rygb$prepost<-sapply(dada2_merge_rygb$Timepoint,function(x){if (x==0) return(0) else return(1)})
+  dada2_rygb$prepost<-sapply(dada2_rygb$Timepoint,function(x){if (x==0) return(0) else return(1)})
+  
+  if(t=="Genus")
+    colnames(dada2_rygb)[colnames(dada2_rygb)=="Esherichica/Shigella"]<-"Escherichia/Shigella"
   
   #write table
-  write.table(dada2_merge_rygb,paste0(input,t,"_norm_table_updated.txt"),sep="\t",quote = FALSE)
+  write.table(dada2_rygb,paste0(input,t,"_norm_table_updated.txt"),sep="\t",quote = FALSE)
   
-  finishAbundanceIndex<-which(colnames(dada2)=="Sample.ID")-1
-  myT<-dada2_merge_rygb[,2:finishAbundanceIndex]
-  meta<-dada2_merge_rygb[,(finishAbundanceIndex+1):ncol(dada2_merge_rygb)]
+  finishAbundanceIndex<-which(colnames(dada2_rygb)=="Patient.ID" )-1
+  myT<-dada2_rygb[,1:finishAbundanceIndex]
+  meta<-dada2_rygb[,(finishAbundanceIndex+1):ncol(dada2_rygb)]
 
   pval<-vector()
   p1M<-vector()
@@ -73,8 +73,5 @@ for (t in taxa){
   
   write.table(df,paste0(output,t,"_BS_MixedLinearModelResults.txt"),sep="\t",row.names = FALSE,quote = FALSE)
 }  
-  
-  
-  
   
   

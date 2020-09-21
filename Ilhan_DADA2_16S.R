@@ -1,6 +1,9 @@
 #Author: Farnaz Fouladi
 #Date: 08-17-2020
-#Description: Compare the gut microbiome at each time point versus baseline.
+#Description: Ilhan dataset:Compare the gut microbiome at each time point versus
+#              baseline using mixed linear models. Count tables are classified by 
+#             DADA2.
+
 
 rm(list=ls())
 
@@ -13,11 +16,14 @@ taxa<-c("Phylum","Class","Order","Family","Genus","SV")
 
 for (t in taxa){
   
-  dada2<-read.table(paste0(input,t,"_norm_table.txt"),sep="\t",header = TRUE,row.names = 1)
+  dada2<-read.table(paste0(input,t,"_norm_table.txt"),sep="\t",header = TRUE,row.names = 1,check.names = FALSE)
   
   dada2_fecalRYGB<-dada2[dada2$env_material=="fecal" & (dada2$Group=="Baseline" |dada2$Group=="6M" | dada2$Group=="12M"), ]
   dada2_fecalRYGB$Group<-factor(dada2_fecalRYGB$Group,levels = c("Baseline","6M","12M"))
   dada2_fecalRYGB$prepost<-sapply(dada2_fecalRYGB$Group,function(x){if (x=="Baseline") return(0) else return(1)})
+  
+  if(t=="Genus")
+    colnames(dada2_fecalRYGB)[colnames(dada2_fecalRYGB)=="Esherichica/Shigella"]<-"Escherichia/Shigella"
   
   #write table
   write.table(dada2_fecalRYGB,paste0(input,t,"_norm_table_updated.txt"),sep="\t",quote = FALSE)

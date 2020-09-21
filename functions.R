@@ -28,7 +28,7 @@ getMetaData<-function(table){
 #This function gives a list of taxa in the count table for a given study
 getListOfBug<-function(table,study,list){
   for (i in 1:ncol(table)){
-    list[[paste0(colnames(table)[i],"_",study)]]<-table[,i]
+    list[[paste0(colnames(table)[i],"_Study",study)]]<-table[,i]
     }
   return(list)
 }
@@ -68,8 +68,10 @@ getlog10p<-function(pval,coefficient){
 #This function gives the log10 p-values from studies or time points that we want to compare
 compareStudies<-function(path,taxa,study1,study2,study1Time,study2Time){
   
-  myT1<-read.table(paste0(path,taxa,"_",study1,"_MixedLinearModelResults.txt"),sep="\t",header = TRUE)
-  myT2<-read.table(paste0(path,taxa,"_",study2,"_MixedLinearModelResults.txt"),sep="\t",header = TRUE)
+  myT1<-read.table(paste0(path,taxa,"_",study1,"_MixedLinearModelResults.txt"),
+                   sep="\t",header = TRUE,check.names = FALSE,quote = "",comment.char = "")
+  myT2<-read.table(paste0(path,taxa,"_",study2,"_MixedLinearModelResults.txt"),
+                   sep="\t",header = TRUE,check.names = FALSE,quote = "",comment.char = "")
   
   common<-intersect(myT1[,"bugName"],myT2[,"bugName"]) 
   myT1c<-myT1[myT1[,"bugName"] %in% common,]
@@ -127,7 +129,7 @@ plotPairwiseStudiesMetagenomics<-function(df,xlab,ylab,coeficient,p){
   
   theme_set(theme_classic())
   
-  plot<-ggplot(data=df,aes(x=pval1,y=pval2))+geom_point(size=0.8)+
+  plot<-ggplot(data=df,aes(x=pval1,y=pval2))+geom_point(size=0.5,color=alpha("black",0.5))+
     geom_hline(yintercept = 0,linetype="dashed", color = "red")+
     geom_vline(xintercept = 0,linetype="dashed", color = "red")+
     labs(x=xlab,y=ylab,

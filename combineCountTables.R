@@ -1,6 +1,6 @@
 #Author: Farnaz Fouladi
 #Date: 08-17-2020
-#Description: Join table across studies.
+#Description: Join 16S table across studies.This scrip works only on the genus level.
 
 rm(list=ls())
 
@@ -13,12 +13,11 @@ source("./Rcode/RYGB_IntegratedAnalysis/functions.R")
 output<-"./output/"
 
 normalized="log10"
-normalized="relab"
+#normalized="relab"
 
 
 ###BS study
 myT.BS<-read.table(paste0(pathToBS,taxa,"_norm_table_updated.txt"),sep="\t",header = TRUE)
-myT.BS<-myT.BS[,-1] #Removing patient ID column
 
 #### Assal study
 myT.Assal<-read.table(paste0(pathToAssal,taxa,"_norm_table_updated.txt"),sep="\t",header = TRUE)
@@ -59,7 +58,7 @@ bugs<-getListOfBug(myT.Ilhan_normalized,"Ilhan",bugs)
 bugs<-getListOfBug(myT.Afshar_normalized,"Afshar",bugs)
   
 namesOfTheList<-names(bugs)
-namesOfTheBugs<-sapply(namesOfTheList,function(x){strsplit(x,"_")[[1]][1]})
+namesOfTheBugs<-sapply(namesOfTheList,function(x){strsplit(x,"_Study")[[1]][1]})
 uniqueBugs<-unique(namesOfTheBugs)
 
 mat<-matrix(NA,nrow = sum(nrow(myT.BS),nrow(myT.Assal),nrow(myT.Ilhan),nrow(myT.Afshar)),
@@ -71,26 +70,26 @@ for (i in 1:ncol(mat)){
   
   bugName<-colnames(mat)[i]
   
-  if (paste0(bugName,"_BS") %in% namesOfTheList){
-    mat[1:nrow(myT.BS),i]<-bugs[[paste0(bugName,"_BS")]]
+  if (paste0(bugName,"_StudyBS") %in% namesOfTheList){
+    mat[1:nrow(myT.BS),i]<-bugs[[paste0(bugName,"_StudyBS")]]
   }else{
     mat[1:nrow(myT.BS),i]<-0
   } 
     
-  if (paste0(bugName,"_Assal") %in% namesOfTheList){
-    mat[(nrow(myT.BS)+1):(nrow(myT.BS)+nrow(myT.Assal)),i]<-bugs[[paste0(bugName,"_Assal")]]
+  if (paste0(bugName,"_StudyAssal") %in% namesOfTheList){
+    mat[(nrow(myT.BS)+1):(nrow(myT.BS)+nrow(myT.Assal)),i]<-bugs[[paste0(bugName,"_StudyAssal")]]
   }else{
     mat[(nrow(myT.BS)+1):(nrow(myT.BS)+nrow(myT.Assal)),i]<-0
   } 
   
-  if (paste0(bugName,"_Ilhan") %in% namesOfTheList){
-    mat[(nrow(myT.BS)+nrow(myT.Assal)+1):(nrow(myT.BS)+nrow(myT.Assal)+nrow(myT.Ilhan)),i]<-bugs[[paste0(bugName,"_Ilhan")]]
+  if (paste0(bugName,"_StudyIlhan") %in% namesOfTheList){
+    mat[(nrow(myT.BS)+nrow(myT.Assal)+1):(nrow(myT.BS)+nrow(myT.Assal)+nrow(myT.Ilhan)),i]<-bugs[[paste0(bugName,"_StudyIlhan")]]
   }else{
     mat[(nrow(myT.BS)+nrow(myT.Assal)+1):(nrow(myT.BS)+nrow(myT.Assal)+nrow(myT.Ilhan)),i]<-0
   } 
   
-  if (paste0(bugName,"_Afshar") %in% namesOfTheList){
-    mat[(nrow(myT.BS)+nrow(myT.Assal)+nrow(myT.Ilhan)+1):nrow(mat),i]<-bugs[[paste0(bugName,"_Afshar")]]
+  if (paste0(bugName,"_StudyAfshar") %in% namesOfTheList){
+    mat[(nrow(myT.BS)+nrow(myT.Assal)+nrow(myT.Ilhan)+1):nrow(mat),i]<-bugs[[paste0(bugName,"_StudyAfshar")]]
   }else{
     mat[(nrow(myT.BS)+nrow(myT.Assal)+nrow(myT.Ilhan)+1):nrow(mat),i]<-0
   } 

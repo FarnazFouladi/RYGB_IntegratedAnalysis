@@ -1,6 +1,8 @@
 #Author: Farnaz Fouladi
 #Date: 08-17-2020
-#Description: Compare the gut microbiome at each time point versus baseline.
+#Description: BS dataset:Compare the gut microbiome at each time point versus
+#             baseline using mixed linear models. Count tables is classified by 
+#             Kraken2.
 
 rm(list=ls())
 
@@ -29,14 +31,13 @@ for (t in taxa){
   meta<-meta[!duplicated(meta$Patient.ID),]
   
   #Remove low sequence depth and Normalize data
-  
   myT1<-myT[rowSums(myT)>1000,]
   meta1<-meta[rowSums(myT)>1000,]
   average<-mean(rowSums(myT1))
   myT_relab<-sweep(myT1,1,rowSums(myT1),"/")
   myT_norm<-log10(myT_relab*average+1)
   
-  surgeryType<-read.table("./input/RYGB_BS/TypeDateofSurgery-BiobehavioralR016-12-2020_FF.txt",sep="\t",header = TRUE)
+  surgeryType<-read.table(paste0(input,"TypeDateofSurgery-BiobehavioralR016-12-2020_FF.txt"),sep="\t",header = TRUE)
   meta1$Patient.ID<-sapply(as.character(meta1$Patient.ID),function(x){substr(x,1,9)})
   meta_merge<-merge(meta1,surgeryType,by.x = "Patient.ID",by.y = "Patient.ID",all.x = TRUE,all.y = FALSE,sort = FALSE)
   meta_merge<-meta_merge[match(rownames(myT1),meta_merge$Sample.ID),]
@@ -55,12 +56,11 @@ for (t in taxa){
   
   if(t=="Species"){
     
-    myT1$time<-meta1$Timepoint
-    myT1$ID<-meta1$Patient.ID
-    myT1$Sample<-meta1$Sample.ID
-    write.table(myT1,paste0(input,"BS_speciesMetadata.txt"),sep="\t",quote = FALSE)
+    myT1<-myT1[,-432] #Removing low abundant "Mycoplasma iowae"
+    myT2<-cbind(myT1,meta1)
+    write.table(myT2,paste0(input,"BS_speciesMetadata.txt"),sep="\t",quote = FALSE)
   }
- 
+  
   pval<-vector()
   p1M<-vector()
   p6M<-vector()
@@ -77,34 +77,16 @@ for (t in taxa){
       
       df<-data.frame(bug,meta1)
       
-      fit<-tryCatch({
-        lme(bug~factor(Timepoint),method="REML",random=~1|Participant_ID,data=df)
-      },
-      error=function(e){cat("ERROR :",conditionMessage(e), "\n")
-        return(NA)})
+      fit<-anova(lme(bug~factor(Timepoint),method="REML",random=~1|Participant_ID,data=df))
+      sm<-summary(lme(bug~factor(Timepoint),method="REML",random=~1|Participant_ID,data=df))
       
-      if (is.na(fit)){
-        
-        pval[index]<-NA
-        p1M[index]<-NA
-        p6M[index]<-NA
-        
-        s1M[index]<-NA
-        s6M[index]<-NA
-        
-        
-      }else{
-        
-        fit<-anova(lme(bug~factor(Timepoint),method="REML",random=~1|Participant_ID,data=df))
-        sm<-summary(lme(bug~factor(Timepoint),method="REML",random=~1|Participant_ID,data=df))
-        
-        pval[index]<-fit$`p-value`[2]
-        p1M[index]<-sm$tTable[2,5]
-        p6M[index]<-sm$tTable[3,5]
-        
-        s1M[index]<-sm$tTable[2,1]
-        s6M[index]<-sm$tTable[3,1]
-      }
+      pval[index]<-fit$`p-value`[2]
+      p1M[index]<-sm$tTable[2,5]
+      p6M[index]<-sm$tTable[3,5]
+      
+      s1M[index]<-sm$tTable[2,1]
+      s6M[index]<-sm$tTable[3,1]
+      
       bugName[index]<-colnames(myT1)[i]
       index<-index+1
       

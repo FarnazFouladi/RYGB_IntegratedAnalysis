@@ -16,7 +16,7 @@ library("yaml")
 output<-"./output/"
 taxa<-"Genus"
 
-#ml.method="randomForest"
+ml.method="randomForest"
 ml.method="lasso"
 
 meta<-read.table(paste0(output,"metaData_merged.txt"),sep="\t",header = TRUE)

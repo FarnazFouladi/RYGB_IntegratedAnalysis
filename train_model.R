@@ -13,7 +13,7 @@ library("yaml")
 
 
 start.time <- proc.time()[1]
-set.seed(2020)
+set.seed(200)
 
 output<-"./output/"
 taxa<-"Genus"
