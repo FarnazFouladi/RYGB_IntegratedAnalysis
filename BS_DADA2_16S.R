@@ -9,7 +9,7 @@ rm(list=ls())
 #Libraries
 library(nlme)
 
-input<-"./input/RYGB_BS/"
+input<-"./input/RYGB_BS/DADA2/"
 output<-"./output/MixedLinearModels/"
 taxa<-c("Phylum","Class","Order","Family","Genus","SV","Seq")
 
@@ -18,23 +18,10 @@ for (t in taxa){
   
   dada2<-read.table(paste0(input,t,"_norm_table.txt"),sep="\t",header = TRUE,row.names = 1,check.names = FALSE)
    
-  #Selecting RYGB surgeries
-  dada2_rygb<-dada2[dada2$Type.of.Surgery ==1 & !is.na(dada2$Type.of.Surgery),]
   
-  #Removing samples that do not have baselines
-  dada2_rygb<-dada2_rygb[dada2_rygb$Participant_ID %in% (dada2_rygb$Participant_ID[dada2_rygb$Timepoint==0]),]
-  
-  dada2_rygb$prepost<-sapply(dada2_rygb$Timepoint,function(x){if (x==0) return(0) else return(1)})
-  
-  if(t=="Genus")
-    colnames(dada2_rygb)[colnames(dada2_rygb)=="Esherichica/Shigella"]<-"Escherichia/Shigella"
-  
-  #write table
-  write.table(dada2_rygb,paste0(input,t,"_norm_table_updated.txt"),sep="\t",quote = FALSE)
-  
-  finishAbundanceIndex<-which(colnames(dada2_rygb)=="Patient.ID" )-1
-  myT<-dada2_rygb[,1:finishAbundanceIndex]
-  meta<-dada2_rygb[,(finishAbundanceIndex+1):ncol(dada2_rygb)]
+  finishAbundanceIndex<-which(colnames(dada2)=="Barcode.ID" )-1
+  myT<-dada2[,1:finishAbundanceIndex]
+  meta<-dada2[,(finishAbundanceIndex+1):ncol(dada2)]
 
   pval<-vector()
   p1M<-vector()
@@ -52,8 +39,8 @@ for (t in taxa){
       
       df<-data.frame(bug,meta)
       
-      fit<-anova(lme(bug~factor(Timepoint),method="REML",random=~1|Participant_ID,data=df))
-      sm<-summary(lme(bug~factor(Timepoint),method="REML",random=~1|Participant_ID,data=df))
+      fit<-anova(lme(bug~factor(Timepoint),method="REML",random=~1|PatientID,data=df))
+      sm<-summary(lme(bug~factor(Timepoint),method="REML",random=~1|PatientID,data=df))
       
       pval[index]<-fit$`p-value`[2]
       p1M[index]<-sm$tTable[2,5]

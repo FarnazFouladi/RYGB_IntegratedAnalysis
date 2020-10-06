@@ -2,7 +2,27 @@
 #Date: 08-17-2020
 #Description: Functions
 
-#This function gives the relave abundance when the input is log10 normalized count
+
+#Generates taxonomic tables
+getTaxaTable<-function(svTable,taxaTable,taxa){
+  colnames(svTable)<-taxaTable[,taxa]
+  svTable<-t(svTable)
+  tab<-rowsum(svTable,group=rownames(svTable))
+  tab<-t(tab)
+  colnames(tab)[ncol(tab)]<-"others"
+  return(tab)
+}
+
+#Normalizes taxonomic tables
+norm<-function(table){
+  table<-table[rowSums(table)>1000,]
+  average<-sum(rowSums(table))/nrow(table)
+  table<-sweep(table,1,rowSums(table),"/")
+  table<-log10(table*average + 1)
+  return(table)
+}
+
+#This function gives the relative abundance when the input is log10 normalized count
 getRelativeAbundance<-function(table){
   finishAAbundanceIndex<-which(colnames(table)=="others")
   tab1<-10^table[,1:finishAAbundanceIndex]
@@ -53,7 +73,7 @@ getPCO<-function(countTable,metaData,variable,names,colors){
   
 }
 
-#This function corrects the sign of p-values based on coefficient signe
+#This function corrects the sign of p-values based on coefficient sign
 
 getlog10p<-function(pval,coefficient){
   
@@ -63,7 +83,6 @@ getlog10p<-function(pval,coefficient){
     else return(log10(pval[x]))
   })
 }
-
 
 #This function gives the log10 p-values from studies or time points that we want to compare
 compareStudies<-function(path,taxa,study1,study2,study1Time,study2Time){
@@ -136,9 +155,7 @@ plotPairwiseStudiesMetagenomics<-function(df,xlab,ylab,coeficient,p){
          title = paste0("Spearman coefficient = ",format(coeficient,digits =3),"\nAdjusted p ",p1))
 }
 
-
-
-#This function perfomes spearman test between studies
+#This function performs Spearman test between studies
 correlationBetweenStudies<-function(df){
   
   myList<-list()

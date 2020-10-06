@@ -24,7 +24,7 @@ s1=3
 path<-paste0(output,"MixedLinearModels/")
 df<-compareStudies(path,taxa,strsplit(studies[s],"-")[[1]][1],strsplit(studies[s1],"-")[[1]][1],strsplit(studies[s],"-")[[1]][2],strsplit(studies[s1],"-")[[1]][2])
 
-taxanomy<-read.table(paste0(input,"RYGB_BS/taxForwardReads.txt"),sep="\t",header = TRUE)
+taxanomy<-read.table(paste0(input,"RYGB_BS/DADA2/taxForwardReads.txt"),sep="\t",header = TRUE)
 tax<-taxanomy[df$bugName,]
 df1<-cbind(df,tax)
 df1$Genus<-factor(df1$Genus)

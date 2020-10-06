@@ -42,10 +42,5 @@ dev.off()
 s="Ilhan"
 myT2_sub<-myT2_c[myT2_c$Study==s,]
 anova(lm(myT2_sub$div~myT2_sub$timepoint))
-summary(lme(div ~ timepoint, random = ~ 1 | ID, data=myT2_sub))
-myT2_sub$timepoint<-relevel(myT2_sub$timepoint,ref="6")
-p.adjust(c(0.9490,0.7584,0.728),method = "BH") #BS
-p.adjust(c(0.2514,0.0403,0.1261,0.2906,0.4721,0.8899),method = "BH") #Assal
-p.adjust(c(0.3094,0.6782,0.2073),method = "BH")#Ilhan
-
+anova(lme(div ~ timepoint, random = ~ 1 | ID, data=myT2_sub))
 

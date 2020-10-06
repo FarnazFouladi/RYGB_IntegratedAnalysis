@@ -7,6 +7,8 @@ rm(list=ls())
 #Libraries
 library(vegan)
 
+set.seed(123)
+
 output<-"./output/"
 taxa<-"Genus"
 colors=c("red","blue","darkgreen","darkorange2","purple","hotpink","black","firebrick")
@@ -35,20 +37,20 @@ Number of permutations: 999
 
 Terms added sequentially (first to last)
 
-                                      Df SumsOfSqs MeanSqs F.Model      R2
-factor(meta$time)                      1    0.7310 0.73104  9.1596 0.03296
-factor(meta$Study)                     3    6.8119 2.27064 28.4503 0.30712
-factor(meta$time):factor(meta$Study)   3    0.2710 0.09035  1.1320 0.01222
-Residuals                            180   14.3660 0.07981         0.64770
-Total                                187   22.1799                 1.00000
-                                     Pr(>F)    
-factor(meta$time)                     0.001 ***
-factor(meta$Study)                    0.001 ***
-factor(meta$time):factor(meta$Study)  0.277    
-Residuals                                      
-Tota"
-
-
+                                      Df SumsOfSqs MeanSqs F.Model
+factor(meta$time)                      1    0.7379 0.73786  9.1916
+factor(meta$Study)                     3    6.7607 2.25357 28.0729
+factor(meta$time):factor(meta$Study)   3    0.2781 0.09269  1.1546
+Residuals                            180   14.4496 0.08028        
+Total                                187   22.2262                
+                                          R2 Pr(>F)    
+factor(meta$time)                    0.03320  0.001 ***
+factor(meta$Study)                   0.30418  0.001 ***
+factor(meta$time):factor(meta$Study) 0.01251  0.219    
+Residuals                            0.65012           
+Total                                1.00000           
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1"
 
 
 

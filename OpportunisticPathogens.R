@@ -24,7 +24,7 @@ study="BS"
 myT<-read.table(paste0(input,"RYGB_BS/Kraken2/",study,name),sep="\t",header = TRUE,check.names = FALSE,comment.char = "",quote = "")
 
 myT1<-myT[,colnames(myT) %in% bugs]
-meta1<-data.frame(time=myT$Timepoint,ID=myT$Participant_ID,Sample=rownames(myT))
+meta1<-data.frame(time=myT$Timepoint,ID=myT$PatientID,Sample=rownames(myT))
 
 p<-matrix(NA,nrow = ncol(myT1),ncol=3,
           dimnames = list(colnames(myT1),c("01","06","16")))
@@ -161,7 +161,7 @@ myT<-read.table(paste0(input,"RYGB_BS_Metagenomics/",study,name),sep="\t",header
 myT1<-myT[,colnames(myT) %in% bugs]
 
 myT1<-myT[,colnames(myT) %in% bugs]
-meta1<-data.frame(time=myT$Timepoint,ID=myT$Participant_ID,Sample=rownames(myT))
+meta1<-data.frame(time=myT$Timepoint,ID=myT$PatientID,Sample=rownames(myT))
 
 p<-matrix(NA,nrow = ncol(myT1),ncol=6,
           dimnames = list(colnames(myT1),c("0-1","0-6","0-12","1-6","1-12","6-12")))
@@ -243,7 +243,7 @@ for (study in datasets){
   
   if(study=="BS" | study=="BSMetagenomics"){
     myT1$time<-as.factor(myT$Timepoint)
-    myT1$ID<-myT$Participant_ID
+    myT1$ID<-myT$PatientID
     myT1$Sample<-rownames(myT)
   }else{
     myT1$time<-as.factor(myT$time)
@@ -288,7 +288,7 @@ for (study in datasets){
   else if (study=="Ilhan")
     plot1<-plot+coord_flip()+labs(title = "Ilhan-16S")+scale_color_manual(values = col,labels=c("Baseline","6 months","12 months"))
   else if (study=="BSMetagenomics")
-    plot1<-plot+geom_signif(y_position=c(6.1,4.6,4.8,4,4.2,4.4,6,6.2,6.4,5,5.2,5.4,6.7,6.8,7,6.7,6.8,7), xmin=c(0.7,1.7,1.7,2.7,2.7,2.7,3.7,3.7,3.8,4.7,4.7,4.7,5.7,5.7,5.7,6.7,6.7,6.7), xmax=c(1.05,1.9,2.3,2.9,3.1,3.2,4.05,4.2,4.05,4.9,5.1,5.2,5.9,6.1,6.2,6.9,7.1,7.2),annotations = "",tip_length=0.03,vjust = 0.5,textsize =4)+
+    plot1<-plot+geom_signif(y_position=c(6.1,4.6,4.8,5.0,4,4.2,4.4,6,6.2,6.4,5.2,5.4,6.7,6.8,7,6.7,6.8,7), xmin=c(0.7,1.7,1.7,1.7,2.7,2.7,2.7,3.7,3.7,3.8,4.7,4.7,5.7,5.7,5.7,6.7,6.7,6.7), xmax=c(1.05,1.9,2.1,2.3,2.9,3.1,3.2,4.05,4.2,4.05,5.1,5.2,5.9,6.1,6.2,6.9,7.1,7.2),annotations = "",tip_length=0.03,vjust = 0.5,textsize =4)+
     labs(title = "BS-Metagenomics")+coord_flip()+scale_color_manual(labels=c("Baseline","1 month","6 months","12 months"),values = col)
   else if (study=="PallejaMetagenomics")
     plot1<-plot+coord_flip()+scale_color_manual(labels=c("Baseline","3 months","12 months"),values = col)+

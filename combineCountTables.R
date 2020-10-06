@@ -5,10 +5,10 @@
 rm(list=ls())
 
 taxa<-"Genus"
-pathToBS<-"./input/RYGB_BS/"
-pathToAssal<-"./input/RYGB_Assal2020/"
-pathToIlhan<-"./input/RYGB_Ilhan2020/"
-pathToAfshar<-"./input/RYGB_Afshar2018/"
+pathToBS<-"./input/RYGB_BS/DADA2/"
+pathToAssal<-"./input/RYGB_Assal2020/DADA2/"
+pathToIlhan<-"./input/RYGB_Ilhan2020/DADA2/"
+pathToAfshar<-"./input/RYGB_Afshar2018/DADA2/"
 source("./Rcode/RYGB_IntegratedAnalysis/functions.R")
 output<-"./output/"
 
@@ -17,16 +17,16 @@ normalized="log10"
 
 
 ###BS study
-myT.BS<-read.table(paste0(pathToBS,taxa,"_norm_table_updated.txt"),sep="\t",header = TRUE)
+myT.BS<-read.table(paste0(pathToBS,taxa,"_norm_table.txt"),sep="\t",header = TRUE)
 
 #### Assal study
-myT.Assal<-read.table(paste0(pathToAssal,taxa,"_norm_table_updated.txt"),sep="\t",header = TRUE)
+myT.Assal<-read.table(paste0(pathToAssal,taxa,"_norm_table.txt"),sep="\t",header = TRUE)
 
 ####Ilhan study
-myT.Ilhan<-read.table(paste0(pathToIlhan,taxa,"_norm_table_updated.txt"),sep="\t",header = TRUE)
+myT.Ilhan<-read.table(paste0(pathToIlhan,taxa,"_norm_table.txt"),sep="\t",header = TRUE)
 
 ###Afshar study
-myT.Afshar<-read.table(paste0(pathToAfshar,taxa,"_norm_table_updated.txt"),sep="\t",header = TRUE)
+myT.Afshar<-read.table(paste0(pathToAfshar,taxa,"_norm_table.txt"),sep="\t",header = TRUE)
 
 
 if(normalized=="relab"){
@@ -99,7 +99,7 @@ for (i in 1:ncol(mat)){
 df<-as.data.frame(mat)
 meta_all<-data.frame(time=c(meta.BS$prepost,meta.Assal$prepost,meta.Ilhan$prepost,meta.Afshar$prepost),
                      timepoint=c(as.character(meta.BS$Timepoint),as.character(meta.Assal$time),as.character(meta.Ilhan$Group),as.character(meta.Afshar$time)),
-                     ID=c(meta.BS$Participant_ID,meta.Assal$ID,meta.Ilhan$ID,meta.Afshar$ID),
+                     ID=c(meta.BS$PatientID,meta.Assal$ID,meta.Ilhan$ID,meta.Afshar$ID),
                      Study=c(rep("BS",nrow(meta.BS)),rep("Assal",nrow(meta.Assal)),
                              rep("Ilhan",nrow(meta.Ilhan)),rep("Afshar",nrow(meta.Afshar))),
                      Sample_ID=c(rownames(myT.BS),rownames(myT.Assal),rownames(myT.Ilhan),rownames(myT.Afshar)))

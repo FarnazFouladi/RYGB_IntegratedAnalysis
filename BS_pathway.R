@@ -8,43 +8,24 @@ rm(list=ls())
 #Libraries
 library(nlme)
 
-input<-"./input/"
+input<-"./input/humann2/BS/"
 output<-"./output/MixedLinearModels/humann2/"
 
-myT<-read.table(paste0(input,"humann2/BS/humanN2_pathabundance_cpm.tsv"),
+myT<-read.table(paste0(input,"humanN2_pathabundance_cpm.tsv"),
                 sep="\t",header = TRUE,check.names = FALSE,comment.char = "",quote ="",row.names = 1)
 
-meta<-read.table(paste0(input,"RYGB_BS_Metagenomics/Metadata_BS_RYGB.txt"),
-                 sep="\t",comment.char = "",check.names = FALSE,quote = "",header = TRUE)
+meta<-read.table(paste0(input,"metagenomics_Metadata.txt"),
+                 sep="\t",header = TRUE,row.names = 1)
 
 
 myT<-as.data.frame(t(myT))
-rownames(myT)<-sapply(rownames(myT),function(x){
-  if(substr(x,1,2)=="BS") return(substr(x,1,6))
-  else  return(strsplit(x,"_")[[1]][1])
-})
 
-myT1<-myT[meta$Sample.ID,]
-myT1_RYGB<-myT1[meta$Type.of.Surgery==1 & !is.na(meta$Type.of.Surgery),]
-meta1<-meta[meta$Type.of.Surgery==1 & !is.na(meta$Type.of.Surgery),]
-
-#Removing samples at 18 months after surgery (n=2)
-myT2_RYGB<-myT1_RYGB[meta1$Timepoint!=18,]
-meta2<-meta1[meta1$Timepoint!=18,]
-
-#Removing samples that do not have baseline samples
-myT3_RYGB<-myT2_RYGB[meta2$Participant_ID %in% (meta2$Participant_ID[meta2$Timepoint==0]),]
-meta3<-meta2[meta2$Participant_ID %in% (meta2$Participant_ID[meta2$Timepoint==0]),]
-
-#Removing duplicated ID ("BIO-2-013-1")
-myT3_RYGB<-myT3_RYGB[!duplicated(meta3$Patient.ID.x),]
-meta3<-meta3[!duplicated(meta3$Patient.ID.x),]
+if(sum(rownames(myT)==rownames(meta))!=nrow(meta)) stop("Error!")
 
 #Unstratified table
-myT3_unstratified<-myT3_RYGB[,-grep("|",colnames(myT3_RYGB),fixed = TRUE)]
-dim(myT3_unstratified) #135 481
-
-meta3$Timepoint<-factor(meta3$Timepoint)
+myT_unstratified<-myT[,-grep("|",colnames(myT),fixed = TRUE)]
+dim(myT_unstratified) #135 493
+meta$Timepoint<-factor(meta$Timepoint)
 
 pval<-vector()
 p1M<-vector()
@@ -56,16 +37,16 @@ s1Y<-vector()
 bugName<-vector()
 index<-1
 
-for (i in 1:ncol(myT3_unstratified)){
+for (i in 1:ncol(myT_unstratified)){
   
-  bug<-myT3_unstratified[,i]
+  bug<-myT_unstratified[,i]
   
   if (mean(bug>0)>0.1){
     
-    df<-data.frame(bug,meta3)
+    df<-data.frame(bug,meta)
     
-    fit<-anova(lme(bug~Timepoint,method="REML",random=~1|Participant_ID,data=df))
-    sm<-summary(lme(bug~Timepoint,method="REML",random=~1|Participant_ID,data=df))
+    fit<-anova(lme(bug~Timepoint,method="REML",random=~1|PatientID,data=df))
+    sm<-summary(lme(bug~Timepoint,method="REML",random=~1|PatientID,data=df))
     
     pval[index]<-fit$`p-value`[2]
     p1M[index]<-sm$tTable[2,5]
@@ -76,7 +57,7 @@ for (i in 1:ncol(myT3_unstratified)){
     s6M[index]<-sm$tTable[3,1]
     s1Y[index]<-sm$tTable[4,1]
     
-    bugName[index]<-colnames(myT3_unstratified)[i]
+    bugName[index]<-colnames(myT_unstratified)[i]
     index<-index+1
     
   }
